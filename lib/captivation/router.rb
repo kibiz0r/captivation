@@ -48,17 +48,16 @@ module Captivation
       end
     end
 
-    def shared?(event, on_channel)
-      @shared_events ||= {}
-      shares = @shared_events[event]
-      case shares
-      when true
-        true
-      when Array
-        shares.include? on_channel
-      else
-        false
-      end
+    def shared_channels
+      @shared_channels ||= []
+    end
+
+    def share(channel)
+      shared_channels << channel
+    end
+
+    def shared?(channel)
+      shared_channels.include? channel
     end
 
     def ignored_events
@@ -93,8 +92,37 @@ module Captivation
     end
 
     def capture_stream
-      @capture_stream ||= fire_stream.reject do |event, *args|
+      @capture_stream ||= fire_stream.reject do |source_stream, event, *args|
         denied? event
+      end
+    end
+
+    def public_capture_stream
+      @public_capture_stream ||= capture_stream.reject do |source_stream, event, *args|
+        source_stream == public_fire_stream
+      end.map do |source_stream, event, *args|
+        [event, *args]
+      end.reject do |event, *args|
+        blocked? event
+      end
+    end
+
+    def private_capture_stream
+      @private_capture_stream ||= capture_stream.reject do |source_stream, event, *args|
+        source_stream == private_fire_stream
+      end.map do |source_stream, event, *args|
+        [event, *args]
+      end
+    end
+
+    def named_capture_stream(name)
+      @named_capture_streams ||= {}
+      @named_capture_streams[name] ||= capture_stream.reject do |source_stream, event, *args|
+        source_stream == named_fire_stream(name)
+      end.map do |source_stream, event, *args|
+        [event, *args]
+      end.where do |event, *args|
+        shared? name
       end
     end
 
@@ -102,55 +130,46 @@ module Captivation
       @fire_stream ||= Reactr::Streamer.new
     end
 
-    def public_channel
-      @resolving_events ||= []
+    def public_fire_stream
+      @public_fire_stream ||= Reactr::Streamer.new.tap do |streamer|
+        streamer.map do |event, *args|
+          [streamer, event, *args]
+        end.subscribe fire_stream
+      end
+    end
 
-      # Oh functional programming is a wonderful thing, look how declarative my code is!
-      # I can barely tell what it's declaring, but by golly does it declare it...
-      @public_channel ||= Captivation::Channel.new capture_stream.reject { |event, *args|
-        blocked? event
-      }.map { |event, *args|
-        [event, *args].tap do
-          @resolving_events << event
-        end          
-      }.reject { |event, *args|
-        (@resolving_events.count(event) > 1).tap do |rejected|
-          if rejected
-            @resolving_events.delete event
-          end
-        end
-      # }, fire_stream.map { |event, *args|
-      #   [event, *args].tap do
-      #     @resolving_events << event
-      #   end
-      # }.reject { |event, *args|
-      #   @resolving_events.count(event) > 1
-      # }
-      }, Reactr::Streamer.new.tap { |streamer|
-        streamer.map { |event, *args|
-          [event, *args].tap do
-            @resolving_events << event
-          end
-        }.reject { |event, *args|
-          @resolving_events.count(event) > 1
-        }.subscribe fire_stream
-      }
+    def private_fire_stream
+      @private_fire_stream ||= Reactr::Streamer.new.tap do |streamer|
+        streamer.map do |event, *args|
+          [streamer, event, *args]
+        end.subscribe fire_stream
+      end
+    end
+
+    def named_fire_stream(name)
+      @named_fire_streams ||= {}
+      @named_fire_streams[name] ||= Reactr::Streamer.new.tap do |streamer|
+        streamer.reject do |event, *args|
+          ignored? event, name
+        end.map do |event, *args|
+          [streamer, event, *args]
+        end.subscribe fire_stream
+      end
+    end
+
+    def public_channel
+      @public_channel ||= Captivation::Channel.new public_capture_stream,
+        Reactr::Streamer.new.tap { |streamer| streamer.subscribe public_fire_stream }
     end
 
     def private_channel
-      @private_channel ||= Captivation::Channel.new capture_stream, fire_stream
+      @private_channel ||= Captivation::Channel.new private_capture_stream, private_fire_stream
     end
 
     def named_channel(name)
-      (@named_streams ||= Hash.new do |h, k|
-        h[k] = Captivation::Channel.new capture_stream.where { |event, *args|
-          shared? event, name
-        }, Reactr::Streamer.new.tap { |streamer|
-          streamer.reject { |event, *args|
-            ignored? event, name
-          }.subscribe fire_stream
-        }
-      end)[name]
+      @named_channels ||= {}
+      @named_channels[name] ||= Captivation::Channel.new named_capture_stream(name),
+        Reactr::Streamer.new.tap { |streamer| streamer.subscribe named_fire_stream(name) }
     end
   end
 end

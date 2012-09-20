@@ -1,8 +1,8 @@
 module Captivation
-  module Captivated
+  module Captivates
     attr_streamer :created_instances
 
-    def captivated(*dependencies)
+    def captivates(*dependencies)
       constructor *dependencies
 
       @captivated_attr_map = dependencies.extract_options!
@@ -22,25 +22,6 @@ module Captivation
 
     def captivated_attrs
       captivated_attr_map.keys
-    end
-
-    def captures(event, &handler)
-      instance_captures = created_instances.flat_map do |instance|
-        instance.capture(event).map do |event, *args|
-          [instance, event, *args]
-        end
-      end
-
-      if block_given?
-        instance_captures.each do |instance, event, *args|
-          instance.instance_exec event, *args, &handler
-        end
-      else
-        instance_captures
-      end
-    end
-
-    def shares(event)
     end
   end
 end

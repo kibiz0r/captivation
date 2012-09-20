@@ -1,3 +1,3 @@
 class Class
-  include ::Captivation::Captivated
+  include ::Captivation::Captivates
 end

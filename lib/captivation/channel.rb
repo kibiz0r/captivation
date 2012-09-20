@@ -1,6 +1,7 @@
 module Captivation
   class Channel
     include Reactr::Streamable
+    include Reactr::Broadcastable
 
     def initialize(broadcaster = nil, subscriber = nil)
       if broadcaster && subscriber
@@ -38,6 +39,11 @@ module Captivation
 
     def subscribe(*args)
       @my_subscriptions.subscribe *args
+    end
+
+    def connect(other_channel)
+      subscribe other_channel
+      other_channel.subscribe self
     end
   end
 end

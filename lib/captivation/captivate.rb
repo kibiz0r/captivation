@@ -10,11 +10,10 @@ module Captivation
       self.class.captivated_attr_map.each do |dependency_name, attr|
         ivar = :"@#{attr}"
 
-        they = instance_variable_get(ivar).router.public_channel # us their public channel
-        we = router.named_channel dependency_name # us our named channel
+        they = instance_variable_get(ivar).router.public_channel # use their public channel
+        we = router.named_channel dependency_name # use our named channel
 
-        they.subscribe we
-        we.subscribe they
+        we.connect they
       end
     end
   end

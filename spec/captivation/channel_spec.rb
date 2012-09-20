@@ -82,4 +82,60 @@ describe Captivation::Channel do
       end
     end
   end
+
+  context "when connected to another channel" do
+    let :other_channel do
+      described_class.new
+    end
+
+    subject do
+      described_class.new.tap do |channel|
+        channel.connect other_channel
+      end
+    end
+
+    it "passes through values" do
+      expect do |b|
+        subject.doppleganger.each &b
+        other_channel.doppleganger << 5
+      end.to yield_with_args(5)
+    end
+
+    context "with explicit handlers on either side" do
+      let! :other_broadcaster do
+        Reactr::Streamer.new
+      end
+
+      let! :other_subscriber do
+        Reactr::Streamer.new
+      end
+
+      let! :other_channel do
+        described_class.new other_broadcaster, other_subscriber
+      end
+
+      let! :my_broadcaster do
+        Reactr::Streamer.new
+      end
+
+      let! :my_subscriber do
+        Reactr::Streamer.new
+      end
+
+      before do
+        @subject = described_class.new(my_broadcaster, my_subscriber).tap do |channel|
+          channel.connect other_channel
+        end
+      end
+
+      subject { @subject }
+
+      it "passes through values" do
+        expect do |b|
+          my_subscriber.each &b
+          other_broadcaster << 5
+        end.to yield_with_args(5)
+      end
+    end
+  end
 end
