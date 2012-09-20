@@ -1,0 +1,9 @@
+export rvm_install_on_use_flag=1
+export rvm_gemset_create_on_use_flag=1
+rvm use ruby-1.9.3-p194@captivation
+
+if [[ ! -d vendor/bundle ]]; then
+  echo 'NOTICE: vendor/bundle directory does not exist, run `./configure` for first-time setup'
+fi
+
+export PATH=vendor/bin:$PATH

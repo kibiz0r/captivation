@@ -1,0 +1,6 @@
+require 'captivation/channel'
+require 'captivation/router'
+require 'captivation/routable'
+require 'captivation/captivate'
+require 'captivation/captivated'
+require 'captivation/class_ext'
