@@ -22,6 +22,28 @@ module Captivation
       router.private_channel << [event, args]
     end
 
+    def fire_at_will(success_and_maybe_failure, stream)
+      success, failure = if success_and_maybe_failure.is_a? Array
+                           success_and_maybe_failure
+                         else
+                           [
+                             success_and_maybe_failure,
+                             "never_#{success_and_maybe_failure}"
+                           ]
+                         end
+
+      stream.inject [] do |args, arg|
+        args << arg
+      end.subscribe(
+        each: lambda { |args|
+          fire success, args
+        },
+        failure: lambda { |error|
+          fire failure, error
+        }
+      )
+    end
+
     module Initialize
       def initialize(*args, &block)
         super if defined?(super) && self.class.superclass != Object
