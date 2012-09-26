@@ -1,10 +1,34 @@
 GIT
   remote: git://github.com/guard/guard.git
-  revision: 94623f22ddc05e6ba39515f5dd19fde28c2d3f23
+  revision: 0d38bbbae5b7b3630a57a4266e2b0c7a16f6c357
   specs:
-    guard (1.3.2)
+    guard (1.4.0)
       listen (>= 0.4.2)
       thor (>= 0.14.6)
+
+GIT
+  remote: git://github.com/kastiglione/konjure.git
+  revision: 040478460fec07c6295e134c6aa9ca13c27f9639
+  specs:
+    konjure (0.0.4)
+
+GIT
+  remote: git://github.com/kibiz0r/motivation.git
+  revision: 7bc31acb003e38365bdb92fd3948c8dc05c3b85c
+  specs:
+    motivation (0.0.1)
+      activesupport
+      bubble-wrap
+      coalesce
+      konjure
+      motion_support
+
+GIT
+  remote: git://github.com/kibiz0r/reactr.git
+  revision: 9ba23c56b96ffb87fd3cd763697ecdaa27221c49
+  specs:
+    reactr (0.0.1)
+      coalesce
 
 PATH
   remote: .
@@ -17,29 +41,13 @@ PATH
       motion_support
       reactr
 
-PATH
-  remote: /Users/kibiyama/git/motivation
-  specs:
-    motivation (0.0.1)
-      activesupport
-      bubble-wrap
-      coalesce
-      konjure
-      motion_support
-
-PATH
-  remote: /Users/kibiyama/git/reactr
-  specs:
-    reactr (0.0.1)
-      coalesce
-
 GEM
   remote: http://rubygems.org/
   specs:
     activesupport (3.2.8)
       i18n (~> 0.6)
       multi_json (~> 1.0)
-    bubble-wrap (1.1.3)
+    bubble-wrap (1.1.4)
     coalesce (0.0.1)
     diff-lcs (1.1.3)
     guard-bundler (1.0.0)
@@ -50,12 +58,11 @@ GEM
     guard-shell (0.5.1)
       guard (>= 1.1.0)
     i18n (0.6.1)
-    konjure (0.0.4)
-    listen (0.5.1)
+    listen (0.5.2)
     motion_support (0.0.6)
       bubble-wrap
     multi_json (1.3.6)
-    rb-fsevent (0.9.1)
+    rb-fsevent (0.9.2)
     rr (1.0.4)
     rspec (2.11.0)
       rspec-core (~> 2.11.0)
@@ -64,7 +71,7 @@ GEM
     rspec-core (2.11.1)
     rspec-expectations (2.11.3)
       diff-lcs (~> 1.1.3)
-    rspec-mocks (2.11.2)
+    rspec-mocks (2.11.3)
     thor (0.16.0)
 
 PLATFORMS
@@ -76,6 +83,7 @@ DEPENDENCIES
   guard-bundler (~> 1.0.0)
   guard-rspec (~> 1.2.1)
   guard-shell (~> 0.5.1)
+  konjure!
   motivation (~> 0.0.1)!
   rb-fsevent
   reactr (~> 0.0.1)!
