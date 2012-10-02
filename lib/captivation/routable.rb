@@ -48,7 +48,7 @@ module Captivation
       def initialize(*args, &block)
         super if defined?(super) && self.class.superclass != Object
 
-        self.class.created_instances << self
+        # self.class.created_instances << self
 
         self.class.capture_handlers.each do |event, handlers|
           handlers.each do |handler|

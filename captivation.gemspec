@@ -16,7 +16,6 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'bubble-wrap'
   gem.add_runtime_dependency 'motion_support'
   gem.add_runtime_dependency 'activesupport'
-  gem.add_runtime_dependency 'konjure'
   gem.add_runtime_dependency 'coalesce'
   gem.add_runtime_dependency 'reactr'
   gem.add_development_dependency 'rspec'
